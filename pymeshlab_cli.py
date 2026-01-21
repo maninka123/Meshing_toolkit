@@ -167,11 +167,22 @@ def collect_files(input_path, extensions, recursive):
                 files.append(os.path.join(input_path, name))
     return sorted(files)
 
+def existing_mesh_for_input(output_dir, file_path, method):
+    base = os.path.splitext(os.path.basename(file_path))[0]
+    prefix = f"{base}_{method}_"
+    if not os.path.isdir(output_dir):
+        return ""
+    for name in os.listdir(output_dir):
+        if name.startswith(prefix) and name.lower().endswith(".ply"):
+            return os.path.join(output_dir, name)
+    return ""
+
 
 def build_config(config, method, output_dir):
     return {
         "method": method,
         "output_dir": output_dir,
+        "skip_existing": get_bool(config, "general", "skip_existing", True),
         "normals": {
             "enabled": get_bool(config, "normals", "enabled", True),
             "k": get_int(config, "normals", "k", 30),
@@ -208,6 +219,7 @@ def print_config_summary(input_path, method, output_dir, extensions, recursive, 
     print(f"Output: {output_dir}")
     print(f"Extensions: {', '.join(extensions)}")
     print(f"Recursive: {recursive}")
+    print(f"Skip existing: {get_bool(config, 'general', 'skip_existing', True)}")
     print("")
     print("Normals")
     print(
@@ -299,6 +311,7 @@ def main():
     start = time.perf_counter()
     success_count = 0
     fail_count = 0
+    skip_count = 0
 
     for idx, file_path in enumerate(files, 1):
         name = os.path.basename(file_path)
@@ -306,13 +319,25 @@ def main():
             clear_progress_line()
         print(f"Processing {idx}/{len(files)}: {name}")
         output_path = build_output_path(file_path, output_dir, method)
+        if config_block["skip_existing"]:
+            existing = existing_mesh_for_input(output_dir, file_path, method)
+            if existing:
+                print(f"⏭️  Skipping (already exists): {existing}")
+                skip_count += 1
+                elapsed = time.perf_counter() - start
+                progress = render_progress(idx, len(files), elapsed)
+                if IS_INTERACTIVE:
+                    write_progress_line(progress)
+                else:
+                    print(progress)
+                continue
         ok, message = reconstruct_mesh(file_path, output_path, config_block)
         if ok:
             success_count += 1
-            print(f"[OK] {message}")
+            print(f"✅ {message}")
         else:
             fail_count += 1
-            print(f"[FAIL] {message}")
+            print(f"❌ {message}")
         elapsed = time.perf_counter() - start
         progress = render_progress(idx, len(files), elapsed)
         if IS_INTERACTIVE:
@@ -327,6 +352,7 @@ def main():
     print("=" * 72)
     print(
         f"Done. Success: {success_count}/{len(files)} | "
+        f"Skipped: {skip_count} | "
         f"Failed: {fail_count} | "
         f"Elapsed: {format_duration(total_elapsed)}"
     )

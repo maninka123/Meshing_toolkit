@@ -56,6 +56,7 @@ Key sections and what they control:
   - `output_dir`: output folder for single-file runs.
   - `extensions`: file extensions for folder mode (comma-separated).
   - `recursive`: scan subfolders (`true/false`).
+  - `skip_existing`: skip files when a matching mesh already exists (`true/false`).
 - `[normals]`
   - `enabled`, `k`, `smooth_iter`, `flip`.
 - `[ball_pivoting]`
@@ -66,7 +67,7 @@ Key sections and what they control:
   - `depth`, `cg_depth`, `iters`, `scale`, `samples_per_node`, `point_weight`,
     `confidence`, `pre_clean`.
 
-## Open3D Pipeline (Meshing_Open3D.py)
+## Open3D Pipeline *(optional)*
 Run:
 ```bash
 python Meshing_Open3D.py
