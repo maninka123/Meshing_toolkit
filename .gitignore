@@ -1,0 +1,5 @@
+__pycache__/
+meshes/
+Dataset_01/
+*.pcd
+*.ply
