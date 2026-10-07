@@ -1,5 +1,13 @@
+# Python-generated files and local environments
 __pycache__/
-meshes/
-Dataset_01/
-*.pcd
-*.ply
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local inputs and generated results; keep the folder guides in Git.
+/datasets/*
+!/datasets/README.md
+
+# Private/local benchmark scratch files; published samples and figures stay tracked.
+/benchmark/.work/
