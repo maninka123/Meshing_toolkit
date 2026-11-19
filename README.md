@@ -191,3 +191,7 @@ Checks include holes, sharp corners, curved surfaces, noise, scale/translation,
 topology, output discovery, rejection of production baselines, colour placement
 after PLY round-trips for both improved methods and all baselines, and matching
 point/mesh preview cameras.
+
+## UNSW collection
+
+Pushes to personal `main` automatically update `Meshing_toolkit/` in the [UNSW AMT collection](https://github.com/unsw-edu-au/AMT-project). See [repository sync and existing working folders](docs/amt-repository-sync.md).
